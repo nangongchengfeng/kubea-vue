@@ -1,4 +1,4 @@
-<template>
+<template style="background-color: black;">
     <div>
         <!-- 你的 HTML 代码 -->
         <h1>
