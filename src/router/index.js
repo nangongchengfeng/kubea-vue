@@ -6,22 +6,17 @@ import NProgress from "nprogress";
 import "nprogress/nprogress.css";
 //导入整体布局
 import Layout from "@/layout/Layout";
-import nProgress from "nprogress";
 
 // 路由规则
-
 const routes = [
     {
         path: "/",
-        redirect: "/home",
-    },
-    {
-        path: "/home",
-        // 引入布局组件
+        name: "Root",
         component: Layout,
+        redirect: "/home",
         children: [
             {
-                path: "/home",
+                path: "home",
                 name: "概览",
                 icon: "fund-outlined",
                 meta: { title: "概览", requireAuth: true },
@@ -97,36 +92,31 @@ const router = createRouter({
     routes,
 });
 
-//递增进度条，这将获取当前状态值并添加0.2直到状态为0.994
-NProgress.inc(100)
-
-// easing 动画字符串
-// speed 动画速度
-// showSpinner 进度环显示隐藏
-nProgress.configure({
+// 配置 NProgress
+NProgress.configure({
     easing: 'ease',
     speed: 500,
     showSpinner: false,
-})
+});
 
-
-router.beforeEach((to, next) => {
+router.beforeEach((to, from, next) => {
     // 进度条开始
-    nProgress.start()
+    NProgress.start();
 
     // 设置头部
     if (to.meta.title) {
-        document.title = to.meta.title
+        document.title = to.meta.title;
     } else {
-        document.title = 'KubeA'
+        document.title = 'KubeA';
     }
-    //放行
-    next()
+
+    // 放行
+    next();
 });
 
 router.afterEach(() => {
     // 进度条结束
-    nProgress.done()
+    NProgress.done();
 });
 
 // 抛出路由实例, 在 main.js 中引用

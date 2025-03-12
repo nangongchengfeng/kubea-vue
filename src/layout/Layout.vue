@@ -1,12 +1,14 @@
 <template>
     <div>
         <!-- 你的 HTML 代码 -->
+        <H1>整体页面布局</H1>
     </div>
+    <router-view></router-view>
 </template>
 
 <script>
 export default {
-    name: 'Layout',
+    name: 'Layout'
     // 你的 JavaScript 代码
 }
 </script>
