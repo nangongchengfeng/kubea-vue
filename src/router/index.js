@@ -16,7 +16,7 @@ const routes = [
         redirect: "/home",
         children: [
             {
-                path: "home",
+                path: "/home",
                 name: "概览",
                 icon: "fund-outlined",
                 meta: { title: "概览", requireAuth: true },
