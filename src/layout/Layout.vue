@@ -48,6 +48,8 @@
                 </div>
             </a-layout-header>
         </a-affix>
+
+
         <!-- 中部 -->
         <!-- 高度永远是窗口最大高度减去68px，因为68是header的高度 -->
         <a-layout style="height: calc(100vh - 68px); ">
@@ -66,18 +68,21 @@
                         <!-- routeChange用于路由跳转 -->
                         <a-menu-item v-if="menu.children && menu.children.length === 1" :index="menu.children[0].path"
                             :key="menu.children[0].path" @click="routeChange('item', menu.children[0].path)">
-
+                            <!-- 处理图标 -->
                             <template #icon>
                                 <component :is="menu.children[0].icon" />
                             </template>
                             <span>{{ menu.children[0].name }}</span>
                         </a-menu-item>
+
                         <!-- 处理有子路由的情况，也就是父栏目 -->
                         <a-sub-menu v-else-if="menu.children && menu.children.length > 1" :index="menu.path"
                             :key="menu.path">
+                            <template #icon>
+                                <component :is="menu.icon" />
+                            </template>
                             <template #title>
                                 <span>
-                                    <component :is="menu.icon" />
                                     <span :class="[collapsed ? 'is-collapse' : '']">{{ menu.name }}</span>
                                 </span>
                             </template>
@@ -87,12 +92,12 @@
                                 <span>{{ child.name }}</span>
                             </a-menu-item>
                         </a-sub-menu>
+
                     </template>
                 </a-menu>
-
-
-
             </a-layout-sider>
+
+
             <!-- main部分 -->
             <a-layout style="padding: 0 24px; background-color: black;">
                 <a-layout-content
@@ -124,18 +129,17 @@ export default {
     // 你的 JavaScript 代码
     setup() {
         const collapsed = ref(false);
+        // 头部
         const selectedKeys1 = ref([]);
         const clusterList = ref(['集群1', '集群2', '集群3', '集群4', '集群5', '集群6', '集群7',])
 
         // 侧边栏的属性
-        //  路由信息
         const routers = ref([])
         const selectedKeys2 = ref([])
         const openkeys = ref([])
-
+        // 路由信息
         const router = useRouter();
 
-        console.log("路由：", router);
 
         // 获取路由信息，挂载到routers中
         onMounted(() => {
@@ -151,13 +155,38 @@ export default {
             // 跳转到登录页
             // router.push('/login');
         }
+        // 导航栏点击切换页面
+        const routeChange = (type, path) => {
+            // 判断点击的栏目是否为父栏目，如果不是，则关闭其他父栏目
+            if (type != 'sub') {
+                openkeys.value = [];
+            }
+            // 表示选中当前path对应的栏目
+            selectedKeys2.value = [path];
+            if (router.currentRoute.value.path != path) {
+                // 获取路由对象并切换
+                router.push(path);
+            }
+        };
 
+        // 根据url自动导航栏目高亮
+        const getRouter = (val) => {
+            selectedKeys2.value = [val[1].path];
+            openkeys.value = [val[0].path];
+        };
+        // 处理菜单栏展开与关闭
+        // openkeys是展开的栏目，selectedKeys2是选中的栏目
         function onOpenChange(keys) {
             const latestOpenKey = keys.find(
                 (key) => openkeys.value.indexOf(key) === -1
             );
             openkeys.value = latestOpenKey ? [latestOpenKey] : [];
         }
+        onMounted(() => {
+            routers.value = router.options.routes
+            // 获取路由对象并切换
+            getRouter(router.currentRoute.value.matched);
+        });
 
         return {
             collapsed,
@@ -170,7 +199,9 @@ export default {
             selectedKeys2,
             openkeys,
             router,
-            onOpenChange
+            onOpenChange,
+            routeChange,
+            getRouter
         }
     }
 
@@ -186,5 +217,9 @@ export default {
 
 .ant-layout-header {
     padding: 0 30px !important;
+}
+
+.is-collapse {
+    display: none;
 }
 </style>
